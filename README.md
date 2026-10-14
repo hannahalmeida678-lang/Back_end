@@ -1512,11 +1512,11 @@ sequenceDiagram
 
 #### **Como funciona o Cookie HTTP**
 
-Um **Cookie** é um pequeno arquivo de texto(geralmente limitadio a 4KB) gravado pelo navegador a pedido do servidor, atraves do cabeçalho de resposta `Set-Cookie`
+Um **Cookie** é um pequeno arquivo de texto(geralmente limitado a 4KB) gravado pelo navegador a pedido do servidor, através do cabeçalho de resposta `Set-Cookie`
 
-**Cookie pode vazar informação**
+**Cookie podem vazar Informações**
 
-Sim, se o cookie for configurado com parametros desprotegidos, qualquer script malicioso injetado na pagina (XSS) pode roubar sessão de usuario logado
+Sim, se um cookie de sessão for configurado com parâmetros desprotegidos, qualquer script malicioso injetado na página(XSS) pode roubar a sessão do usuário logado.
 
 **Para evitar problemas de Segurança em Cookie: usando Flags de segurança.**
 
@@ -1528,8 +1528,7 @@ Sim, se o cookie for configurado com parametros desprotegidos, qualquer script m
 
 #### **O Ciclo de Vida da SESSÃO em PHP: `$_SESSION` no servidor**
 
-Enquanto os cookies residem no navegador, os dados da sessão ficam armazenados com **privacidade total dentr do servidor** (em um arquivo temporario na memoria)
-
+Enquanto os cookies residem no Navegador, os dados da sessão ficam armazenados com **privacidade total dentro do servidor** (em um arquivo temporário na memória)
 
 ```mermaid
 flowchart
@@ -1550,53 +1549,54 @@ flowchart
     memoria <-->|"Persistência em Disco"| disco
     servidor -->|"Garante a Autenticação do Usuário"| cliente
 
-    style cliente fill:#3300aa,stroke:#ea580c,stroke-width:2px,color:#7c2d12
+    style cliente fill:#ff00aa,stroke:#ea580c,stroke-width:2px,color:#7c2d12
     style cookie fill:#fed7aa,stroke:#ea580c,stroke-width:2px,color:#7c2d12
-    style servidor fill:#ff00ff,stroke:#16a34a,stroke-width:2px,color:#14532d
+    style servidor fill:#aa00ff,stroke:#16a34a,stroke-width:2px,color:#14532d
     style memoria fill:#bbf7d0,stroke:#16a34a,stroke-width:2px,color:#14532d
     style disco fill:#e2e8f0,stroke:#64748b,stroke-width:2px,color:#1e293b   
 
 ```
 
-**Sintaxe Essecial do php**
+**Sintaxe Essencial do PHP para Sessão**
 
 ```php
-//configurar as sessoes com funções nativas do PHP(ler documentação)
+//configurar as sessão com funções nativas do PHP(ler documentação)
 
-//1. configurar as flags do cookie antes de abrir a sessão
+//1. Configurar as flags dos cookies Antes de abrir a sessão
 session_set_cookie_params([
-    "lifetime"      => 0,   //expira ao fechar o navegador
-    "path"           => "/" // valido para todas as paginas do dominio
-    "httponly"       => true//proteçao contra xss
-    "samesite"       => "lax" //prteçao contra csrf
+    "lifetime"      => 0,       // Cookie expira ao fechar o navegador
+    "path"          => "/"      // Válido para todas as páginas do dominio
+    "httponly"      => true     // Proteção contra XSS
+    "samesite"      => "Lax"    // Proteção contra CSRF
 ]);
 
-    //2. iniciar session ativa
-    session_start()
+// 2. Iniciar ou restaurar a session ativa
+session_start();
 
-    //3. gravar os dados da sessão (após validar o login)
-    //usar super globais($_SESSION) para isso
-    $_SESSION["usuario_id"] = 10;
-    $_SESSION["usuario_perfil"] = "ADMIN";
+// 3. Gravar os dados da sessão (após validar o login)
+//usar seperglobais($_SESSION) para isso
+$_SESSION["usuario_id"] = 10;
+$_SESSION["usuario_perfil"] = "ADMIN";
 
-    //4, Permitir a leitura dos dados em qualquer página do meu site
-    $idLogado = $_SESSION["usuario_id"] ?? null; // se o usuario não tiver feito login a session é null
+// 4. Permitir a leitura dos dados em qualquer página do meu site
+$idLogado = $_SESSION["usuario_id"] ?? null; // se o usuario não tiver feito login a session é null
 ```
+---
 
-#### **criptografia de senhas**
+#### **Criptografia de Senhas**
 
 No passado, desenvolvedores armazenavam senhas utilizando funções matemáticas de integridade como `md5($senha)` ou `sha1($senha)`.
 
-> o MD5 foi quebrado em 2004 e SH1 foi quebrado em 2017
+> O MD5 foi quebrado em 2004 e SHA1 foi quebrado em 2017.
 
-**a solução moderna é criptografia vom uso de hash**
+**A Solucção Moderna é Criptografia com uso de Hash**
 
-o padrão criptografia utilizado são o `Argon2id`, ou o `Bcrypt` 
+O padrão de criptografia utilizado são o `Argon2id`, ou o `Bcrypt`
 
-**caracteristicas da criptografia de hash**
+**Caracterisiticas da Criptografia de Hash**
 1. **Unidirecional(One-way):** É matematicamente impossível descriptografar o hash para recuperar a senha original, já que o hash muda cada milisegundo.
 2. **Salt Automático e Aleatório**: A cada execução, a função gera um vetor de `salt` único de 16bytes. Mesmo que 2 pessoas tenham a mesma senha, os hashes gerados serão completamentes diferentes!.
-3. **Custos Ajustaveis**: É possivel calicrar quanto de memoria o algoritimo levára para calcular o hash
+3. **Custos Ajustáveis**: É possível calibrar quanto de memória o algoritmo levará para calcular o hash
 
 **Sintaxe Profissional de Cryptografia Moderna**
 
@@ -1604,31 +1604,29 @@ o padrão criptografia utilizado são o `Argon2id`, ou o `Bcrypt`
 $senhaDigitada = *******
 //
 $hash = password_hash($senhaDigitada, PASSWORD_ARGON2ID);
-//saida $argon@id$=19#m65536,t=4,p=1$jkhdsfhl...(comprimento ~96 a 128 chars)
-
+//saída:  $argon2id$v=19#m65536,t=4,p=1$jkhdsfhl...(comprimento ~96 a 128 chars)
 ```
-
 **O processo de Descriptografia**
 ```php
 $senhaInformada = $_POST["senha"];
 $hashDoBanco    = $usuario["hash"];
 
-if(password_verify($senhaInformada, $hashdobanco)){
-    //senha incorrets
-}else{
-    //senha correta
+//o processo de verificação
+if(password_verify($senhaInformada, $hashDoBanco)){
+    //Senha Correta
+} else{
+    //Senha Incorreta
 }
 ```
+
 >[Aviso|]
 > Nunca tente fazer (password_hash($senha) === $hashDoBanco)
 > Como o `password_hash` gera um salt aleatório a cada milisegundo, a comparação por igualdade **sempre será falso**
-> a verifica~ção deve ser feita **exclusivamente** com a função `password_verify()`
+> A Verifiação deve ser feita **exclusivamente** com a função `password_verify()`
 
-
-#### **arquitetura de altenticação nominada Middleware (guard)**
+#### **Arquitetura de Autenticação: Middleware (guard)**
 
 Para impedir que visitantes não logados acessem páginas privadas ( como dashboard.php ou relatorios.php), criamos interceptadores chamados **Guards (Middlewares de Proteção)**.
-
 
 ```mermaid
 flowchart TD
@@ -1640,9 +1638,88 @@ flowchart TD
 ```
 **Como usar o guard.php**:
 
-Em todas as páginas restritas do sistema a **primeira linha de código** após o `declare(strict_types=1)`será:
+Em todas as páginas restritas do sistema a **primeira linha de código** após o `declare(strict_types=1)` será:
 
 ```php
-required_once__DIR__ . "src/guard.php";
+required_once __DIR__ . "/src/guard.php";
 ```
+
 Se a pessoa não estiver autenticada ou não tiver o perfil de acesso, ela é expulsa antes mesmo que qualuqer byte de HTML seja renderizado.
+
+---
+
+### Semana 11 - Programação Orientada a Objetos em PHP.
+
+**Tema:** Paradigma de POO, os 4 Pilares da Orientação a Objetos (Abstração, Encapsulamento, Herança e Polimorfismo), Classes e Instâncias, Construtores, Modificadores de Acesso (`private`, `protected` e `public`) e Modelagem de Dados.
+
+#### **Do Procedural à Orientação a Objetos**
+
+Na Programação Procedural manipulação de variáveis, laços de repetição e funções são interpretados de forma linear, ou seja, todo o código é escrito em um monobloco (`código de um único arquivo de programação`). Essa abordagem resolve problemas lineares com maestria, mas colapsa rapidamente quando sistemas crescem em escala, complexidade e criticidade de regra de negócio.
+
+Na Programação Procedural:
+1. **Os dados estão exposto**: Qualquer função pode alterar qualquer campo a qualquer momento.
+2. **As regras de validação ficam dispersos**: Cada tela precisa checar uma função, gerando dezenas de `if/else`duplicados espalhados pelo código. Se uma regra mudar, o desenvolvedor precisa lembrar de atualizar todos os arquivos do sistema.
+3. **Não há garantia de invariantes**: É impossível garantir que um dado sempre permaneça em estado consistente. 
+
+**O que é Paradigma de Programação Orientado a Objetos (POO)?**
+
+Na **POO**, em vez de separar funções de um lado e dados soltos de outro, nós unimos *dados(atributos)* e as *funções que manipula esses dados(métodos)* dentro de uma única estrutura chamada **Objeto**
+
+**Quadro Comparativo Procedural vs POO:**
+
+| Aspectos | Paradigma Procedural | Praradigma Orientado a Objetos(POO) |
+| - | - | - |
+| **Unidade Fundamental** | Procedimento e Funções soltas | Classes e Objetos |
+| **Proteção de Dados** | Nenhuma (dados globais ou em arrays abertos) | Alta (Encapsulamento) |
+| **Reuso de Códigos** | Inclusão de Script (`required_once`) e cópia | Herança(`extends`), Composição e Interfaces |
+| **Tratamento de Variaçoes** | Blocos gigantes de `switch` e `if/else` | Polimorfismo e Classes Abstratas |
+| **Manutenibilidade** | Complexa à medida que a base de código cresce | Alta, modular, testável e pronta para arquitetura corporativas (MVC, DDD, Clean Architecture) |
+
+#### **Anatomia da Classe e Objeto**
+
+- **Classe**: é molde, a planta baixa, o projeto de engenharia. Ela descreve quais atributos(dados) e comportamentos(métodos) as entidades daquele tipo possuirão. Ela reside no código-fonte e não ocupa espaço dinâmico de dados na memória.
+- **Objeto**: é o produto final construtido a partir do molde, uma instância real, palpável e viva alocada na memória do servidor durante o ciclo de execução. 
+
+
+```mermaid
+flowchart TD
+    molde["Classe: ContaBancaria<br/>(Molde / Definição de Atributos e Métodos)"]
+
+    molde -->|"new ContaBancaria()"| obj1["Objeto 1 em Memória<br/>Titular: Carlos<br/>Agência: 001<br/>Saldo: R$1.500,00"]
+    molde -->|"new ContaBancaria()"| obj2["Objeto 2 em Memória<br/>Titular: Douglas<br/>Agência: 001<br/>Saldo: R$4.200,00"]
+    molde -->|"new ContaBancaria()"| obj3["Objeto 3 em Memória<br/>Titular: Eduardo<br/>Agência: 003<br/>Saldo: R$850,00"]
+
+    style molde fill:#e0e7ff,stroke:#4338ca,stroke-width:2px,color:#312e81
+    style obj1 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style obj2 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style obj3 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+```
+
+**O Ciclo de Instanciamento de Objetos**
+
+Ao instanciar um objeto com a instrução `new`, o PHP invoca o método constructor especial `__construct()`. E usamos a palavra-chave `$this`para fazer referência direta e exclusiva ao **atributo** que está sendo executado pelo código naquele momento.
+
+```php
+
+class ContaBancaria {
+    // Declaração tradicional de atributos tipados
+    private string $titular;
+    private int $agencia;
+    private float $saldo;
+
+    // Método Construtor
+    public function __construct(string $titular, int $agencia, float $saldo){
+        $this->titular = titular; //this->titualr refere-se ao atributo da classe
+        $this->agencia = agencia; //this->titualr refere-se ao atributo da classe
+        $this->saldo = saldo; //this->titualr refere-se ao atributo da classe
+    }
+
+    // Método de Acesso
+    public function getSaldo(): float{
+        return $this->saldo;
+    }
+}
+
+//Instanciando dois objetos completamentes independentes
+
+ ```

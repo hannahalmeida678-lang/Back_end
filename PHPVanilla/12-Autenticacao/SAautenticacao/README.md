@@ -59,74 +59,80 @@ db_pass     = postgres
 
 Criar a Classe de Conexão com o Banco de Dados em Formato Singleton (`src/ConexaoBanco.php`)
 
-
 ```php
 <?php
 declare(strict_types=1);
 
-//criando uma classe responsável por realizar a a conexão com o Banco
-// essa classe será uma Singleton ( permitira instanciar apenas um objeto por vez)
-
+/**
+ * Conexao Singleton com o PostgreSQL via PDO.
+ */
 final class ConexaoBanco {
-    //atributos
-    // Armazenar a Conexão aberta com o Banco de Dados
     private static ?PDO $instancia = null;
 
-    //métodos
-    // toda classe precisa de um construtor (o construtor é um método que permite a criação de objetos)
-    // em classes do tipo singleton o construtor é private e vazio
-    private function __construct(){}
+    private function __construct() {}
+    private function __clone(): void {}
 
-    // métodos de segurança anti clonagem e anti-serialização(desserialização)
-    private function __clone(): void{}
-    public function __wakeup(): void{
-        // estou criando uma exception()
-        throw new \Exception("Desserialização não permitida para Singleton");
+    public function __wakeup(): void {
+        throw new \Exception("Desserializacao proibida.");
     }
 
-    //método para obter a Conexão ( precisa sem público e estático)
     public static function obterConexao(string $caminhoConfig): PDO {
-        //verificar se já não existe uma conexão
-        if(self::$instancia ===null){// se a conexão não exisitir, entao crio uma
-            $config = self::carregarArquivoConfig($caminhoConfig);
-            self::$instancia = self::estabelecerConexao($config);
-        }// caso já exista, retrona a conexão já existente
+        if (self::$instancia === null) {
+            if(!file_exists($caminhoConfig)){
+                throw new \RuntimeException("Arquivo de configuração não encontrado em {$caminhoConfig}");
+            }
+            $dados = parse_ini_file($caminhoConfig, true);
+            if($dados === false || !isset($caminhoConfig, true)){
+                throw new \RuntimeException("sessão [database] ausente no arquivo de configuracao");
+            }
+            $cfg = $dados['database'];
+            $dsn = sprintf("%s:host=%s;port=%s;dbname=%s",
+                $cfg['db_driver'], $cfg['db_host'], $cfg['db_port'], $cfg['db_name']);
+            self::$instancia = new PDO($dsn, $cfg['db_user'], $cfg['db_pass'], [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false
+            ]);
+        }
         return self::$instancia;
     }
-    
-    //criar os método para carregar arquivo do .ini
-    private static function carregarArquivoConfig(string $caminho): array {
-        if(!file_exists($caminho)){ // se arquivo não exisitir 
-            throw new \RuntimeException("Arquivo de Configuração não encontrado em {$caminho}");
-        }// caso o arquivo exista
-        $dados = parse_ini_file($caminho, true);
-        if($dados === false || !isset($dados["database"])){
-            throw new \RuntimeException("Seçao [database] ausente no arquivo de configuração");
-        }// se tudo estiver certo
-        return $dados["database"];
-    }
-
-    // criar método para estabelecer a conexão com o banco
-    private static function estabelecerConexao(array $cfg): PDO{
-        //montar o endereço de conexão (pgsql:host=127.0.0.1;port=5432;biblioteca_escola)
-        $dsn = sprintf(
-            "%s:host=%s;port=%s;dbname=%s",
-            $cfg["db_driver"],
-            $cfg["db_host"],
-            $cfg["db_port"],
-            $cfg["db_name"],
-        );
-
-        //montar as flags de Segurança do PDO
-        $opcoes = [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-            PDO::ATTR_TIMEOUT            => 5
-        ];
-        return new PDO($dsn, $cfg["db_user"], $cfg["db_pass"], $opcoes);
-    }
 }
-?>
 ```
 
+## Camada de Acesso a Dados ( `src/UsuarioDAO.php`)
+
+Isolar as operações de busca e cadastro de usuários, aplicando o hashing de senha com `password_hash()`
+
+criar os métodos: 
+- Cadastrar (Create)
+- busca por email (Read)
+- Verificar se email já existe (read)
+
+## fazer o serviço de autenticação (`src/AuthService.php`)
+
+- classe que ira criar o ciclo de vida da sessão do usuario: cookies(navegador) e as sessões(servidor)
+
+> obs: classe tipo static (não existe instnaciamento de objetos)
+
+AuthService.php
+- iniciarSessaoSegura => passa as informaçoes para cookies
+- autenticar() -> assa as informações para a superglobal
+- sessaoExpirada() => verifica o tempo de inatividade
+- sessionDestroy() => finaliza a sessão e limpas os cookies do navegador
+
+## midleware interceptador (`src/guar.php`)
+
+-bloqueia visitantes não altenticados ou sessoes expiradas em paginas internas
+
+- verifica os estado da sessão
+- verifica se a sessão não expirou
+
+## Criar as telas
+
+### tela de cadastro(`cadastro.php`)
+
+### Tela de Login (`login.php`)
+
+### Tela de Dashboard (`dashboard.php`)
+ 
+### campo logout (`logout.php`)
