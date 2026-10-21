@@ -25,3 +25,4 @@ SAPOO/
 ### Conta Exception (`src/Exceptions/ContaException.php`)
 
 ## Entidade de Titularidade (`src/Dominio/Titular.php`)
+
