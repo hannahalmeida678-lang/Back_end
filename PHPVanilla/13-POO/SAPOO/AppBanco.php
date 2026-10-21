@@ -37,8 +37,9 @@ try {
     $cp->renderJuros(1.5);
     $logsOperacionais[] = "REndimento de Jutos de 1,5% creditado na Poupança. Saldo atual: R$ ". number_format($cp->getSaldo(), 2, ",", ".");
    
-    //6. 
-    
+    //6. teste de tentativa de saque invalido para simular captura de exceção
+    $cp->sacar(50000.00);
+
 } catch (ContaException $e){
     $logsOperacionais[] = "Erros de Dominio Capturados" . $e->getMessage();
 } catch (\Throwable $th) {
