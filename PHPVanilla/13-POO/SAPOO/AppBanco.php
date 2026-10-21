@@ -36,6 +36,8 @@ try {
     //5. Aplicação de juros de rendimento na Poupança
     $cp->renderJuros(1.5);
     $logsOperacionais[] = "REndimento de Jutos de 1,5% creditado na Poupança. Saldo atual: R$ ". number_format($cp->getSaldo(), 2, ",", ".");
+   
+    //6. 
     
 } catch (ContaException $e){
     $logsOperacionais[] = "Erros de Dominio Capturados" . $e->getMessage();
