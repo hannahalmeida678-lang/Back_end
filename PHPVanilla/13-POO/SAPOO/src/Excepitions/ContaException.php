@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use DomainException;//bibliot4ecA DE ERROS DO PHP
+
 
 class ContaException extends DomainException {
     //Herdando as Exception da Biblioteca DomainException
