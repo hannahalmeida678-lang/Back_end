@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use InvalidArgumentException;//biblioteca de exception para invalid alguments
-
 //Classe para Representar o titular ca conta bancaria
 
 final class Titular {
@@ -25,8 +23,7 @@ final class Titular {
         //CPF -> remove todos os caracteres que não forem nº do CPF
         $cpfNumeros = preg_replace("/\D/", "",$this->cpf);
         if(strlen($cpfNumeros) !== 11) {
-            throw new InvalidArgumentException("O CPF deve ter extamente 11 digitos numéricos");
+            throw new InvalidArgumentException("O CPF deve ter exatamente 11 dígitos numéricos");
         }
     }
 }
-
