@@ -90,7 +90,8 @@ erDiagram
     usuarios ||--o{ movimentacoes : realiza
     produtos ||--o{ movimentacoes : registra
 ```
-## estrutura do projeto
+
+## Estrutura Completa de Diretórios do Projeto (Arquitetura MVC)
 
 Crie rigorosamente a seguinte árvore de pastas e arquivos no seu espaço de trabalho
 
@@ -138,3 +139,43 @@ senai-supply-mvc/
             └── listar.php      <- Tabela de insumos com atalho de movimentação
 
 ```
+
+## Etapas de Desenvolvimento do Projeto
+
+### Modelagem Relacional e Script DDL (`schema.sql`)
+
+Criar o Banco de Dados e Executar o Script SQL para Criar as Tabelas
+
+### Configurar o AutoLoad PSR-4 (composer.json)
+
+Criar o arquivo `composer.json` na raiz do projeto
+
+- composer.json => gerenciador de dependências do projeto
+
+- PSR-4 => biblioteca de mapeamento de arquivos do projeto evita a necessidade de usar `required_once`
+
+> obs: antes de rodar o projeto: executar o comando no terminal `composer dump-autoload -o`
+
+### Criação da Conexão com o Banco de Dados e Configuração de Conexão
+
+Criar o arquivo `.gitignore` 
+
+- .gitignore => evita subir para nuvem informações protegidas ou sigilosas do projeto
+
+Criar os dados de configuração (`config/database.ini`)
+
+- database.ini => informações de conexão com o banco 
+
+Criar a Classe Singleton de Conexão com o Banco de Dados (`src/Core/ConexaoBanco.php`)
+
+- ConexaoBanco.php => classe do tipo Singleton para conexão com o banco de dados
+
+### Criação da classe de logs do Sistema
+
+- Criação de Classe para receber os logs do Sistema (auditoria, aviso, erro)
+
+### Criação dos Models
+
+
+### Criação dos Constrollers
+
