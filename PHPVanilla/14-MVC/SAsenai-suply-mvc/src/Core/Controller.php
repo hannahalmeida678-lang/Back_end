@@ -46,3 +46,4 @@ abstract class Controller {
         return !empty($token) && hash_equals((string)$sessaoToken, (string)$token);
     }
 }
+
