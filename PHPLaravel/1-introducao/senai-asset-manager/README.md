@@ -141,3 +141,21 @@ Execute a sequência de 7 testes de validação técnica no laboratório:
    *Resultado Esperado:* Todos os indicadores técnicos devem estar validados em verde.
 
 ![alt text](image-5.png)
+
+___
+
+# continuação do projeto: construção da gestão de pareitos industriais ( modulo cliente)
+
+## Criação do Model e Migrações do Banco de Dados
+
+Crie o model e o arquivo de migração para a tabela `clientes`
+
+`php artisan make:Model Cliente -m`
+
+-m => diretamente relaciada a migração do banco de dados
+
+## Gera e Implementar `ClienteController`
+
+`php artisan make:controller ClienteController --resource`
+
+É criado no arquivo app\http\controllers\cliente controller.php
