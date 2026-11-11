@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("razao_social");
             $table->string("cnpj")->unique();
+            $table->string("setor");
             $table->string("status")->default("ATIVO");
             $table->timestamps();
         });

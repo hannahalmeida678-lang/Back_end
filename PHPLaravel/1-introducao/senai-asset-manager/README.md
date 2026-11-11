@@ -68,13 +68,12 @@ e criar index.blade.php
 
 ## 6. Inicialização e Inspeção
 
-Inspecionar 
+Inspecionar;
 
 `php artisan about`
 
-Homolocar 
+Homolocar.
 `php artisan serve`
-
 
 ## 7. Roteiro de Homologação e Teste
 
@@ -89,6 +88,7 @@ Execute a sequência de 7 testes de validação técnica no laboratório:
 2. **Teste 2 — Resposta da Rota de Diagnóstico JSON:**  
    Acesse a URL `http://localhost:8000/status` (ou clique no botão verde do painel).  
    *Resultado Esperado:* O navegador exibe a resposta estruturada em JSON semântico:
+
    ```json
    {
        "plataforma": "SENAI Asset Manager",
@@ -98,6 +98,7 @@ Execute a sequência de 7 testes de validação técnica no laboratório:
        "timestamp": "2026-10-30T16:45:00-03:00"
    }
    ```
+
    ![alt text](image-1.png)
 
 3. **Teste 3 — Inspeção de Rotas com Artisan:**  
@@ -107,19 +108,24 @@ Execute a sequência de 7 testes de validação técnica no laboratório:
 
 4. **Teste 4 — Auditoria de Blindagem do Arquivo `.env`:**  
    Abra o terminal e verifique se o `.env` está protegido pelo Git:
+
    ```bash
    git status --ignored
    ```
+
    *Resultado Esperado:* O arquivo `.env` aparece listado na seção de arquivos ignorados (`Ignored files`). Ele **nunca** deve aparecer como arquivo rastreado (*Untracked/Staged*)!
 
    ![alt text](image-3.png)
 
 5. **Teste 5 — Teste de Execução no Terminal Interativo (Tinker):**  
    Abra o REPL do Laravel:
+
    ```bash
    php artisan tinker
    ```
+
    Digite os seguintes comandos dentro do Tinker:
+
    ```php
    config('app.name');
    // Retorna: "SENAI Asset Manager"
@@ -129,6 +135,7 @@ Execute a sequência de 7 testes de validação técnica no laboratório:
    
    exit;
    ```
+
    ![alt text](image-4.png)
 
 6. **Teste 6 — Auditoria da Chave Criptográfica:**  
@@ -144,7 +151,7 @@ Execute a sequência de 7 testes de validação técnica no laboratório:
 
 ___
 
-# continuação do projeto: construção da gestão de pareitos industriais ( modulo cliente)
+### continuação do projeto: construção da gestão de pareitos industriais ( modulo cliente)
 
 ## Criação do Model e Migrações do Banco de Dados
 
@@ -158,4 +165,38 @@ Crie o model e o arquivo de migração para a tabela `clientes`
 
 `php artisan make:controller ClienteController --resource`
 
-É criado no arquivo app\http\controllers\cliente controller.php
+É criado no arquivo.
+
+app\http\controllers\cliente controller.php
+
+> obs: ao usarmos a flag `--resource` no comando artisan, 7 matodos são criados automaticamente, bastando preencher os metodos com os elementos logicos
+
+### criamos as rotas mapeadas da API no arquivo(`routes/web.php`)
+
+DEpois de criar o model, executar a migração e implemetar o controller, devemos declarar as rotas do módulo da api
+
+podemos criar rotas customizadas ou rotas padrão usando recursos resource do LARAVEL
+
+### Construção das views usando Blade
+
+crie o diretório `resource/view/clientes`
+e dentro do diretório crie os arquivos:
+
+- index.blade.php
+- create.blade.php
+- show.blade.php
+- edit.blade.php.
+
+
+_____
+
+## criar modulo de produto
+
+class produto{
+   atributos
+      nome
+      fabricante
+      quantidade
+      preco
+}
+
