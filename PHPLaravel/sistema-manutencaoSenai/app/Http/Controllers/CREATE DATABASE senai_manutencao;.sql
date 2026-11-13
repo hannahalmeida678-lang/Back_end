@@ -1,0 +1,2 @@
+CREATE DATABASE senai_manutencao;
+
